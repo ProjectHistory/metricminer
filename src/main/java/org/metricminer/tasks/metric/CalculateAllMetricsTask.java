@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.StatelessSession;
+import org.metricminer.infra.dao.MetricDao;
+import org.metricminer.infra.dao.SourceCodeDao;
 import org.metricminer.model.CalculatedMetric;
 import org.metricminer.model.Project;
 import org.metricminer.model.SourceCode;
@@ -16,13 +18,15 @@ import org.metricminer.tasks.metric.common.MetricResult;
 public class CalculateAllMetricsTask extends SourcesIteratorAbstractTask {
 
 	private final List<Metric> metrics;
-	private final StatelessSession statelessSession;
+	private MetricDao metricDao;
+	private StatelessSession statelessSession;
 
-	public CalculateAllMetricsTask(Task task, Session session, StatelessSession statelessSession,
-			List<Metric> metrics) {
-		super(task, session, statelessSession);
-		this.statelessSession = statelessSession;
+	public CalculateAllMetricsTask(Task task, MetricDao metricDao,
+			List<Metric> metrics, SourceCodeDao sourceCodeDao, StatelessSession statelessSession) {
+		super(task, sourceCodeDao);
+		this.metricDao = metricDao;
 		this.metrics = metrics;
+		this.statelessSession = statelessSession;
 	}
 
 	@Override
@@ -44,7 +48,7 @@ public class CalculateAllMetricsTask extends SourcesIteratorAbstractTask {
 
 			statelessSession.beginTransaction();
 			for (MetricResult result : results) {
-				statelessSession.insert(result);
+				metricDao.save(result);
 			}
 			statelessSession.getTransaction().commit();
 		} catch (Throwable t) {
@@ -60,7 +64,7 @@ public class CalculateAllMetricsTask extends SourcesIteratorAbstractTask {
 		    project = (Project) statelessSession.get(Project.class, project.getId());
 			CalculatedMetric calculatedMetric = new CalculatedMetric(project,
 					metric.getFactoryClass());
-			statelessSession.insert(calculatedMetric);
+			metricDao.save(calculatedMetric);
 		}
 		statelessSession.getTransaction().commit();
 	}

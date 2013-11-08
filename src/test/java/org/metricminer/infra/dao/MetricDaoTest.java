@@ -21,7 +21,7 @@ public class MetricDaoTest extends DaoTest {
 	public void setup() {
 		AvaiableMetricResults avaiableMetrics = new AvaiableMetricResults(null)
 			.add(CCMetricFactory.class, LComMetricFactory.class);
-		metricDao = new MetricDao(session, avaiableMetrics);
+		metricDao = new MetricDao(session, avaiableMetrics, null);
 	}
 
 	@Test

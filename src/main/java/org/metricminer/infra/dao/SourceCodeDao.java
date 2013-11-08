@@ -19,6 +19,10 @@ public class SourceCodeDao {
 		this.statelessSession = statelessSession;
 	}
 
+	public SourceCodeDao() {
+		this(null);
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<SourceCode> listSourcesOf(Project project, int page) {
 		Query query = statelessSession.createQuery("select source from SourceCode source "
@@ -91,6 +95,10 @@ public class SourceCodeDao {
 		result.deleteCharAt(result.length() - 1);
 		result.append(')');
 		return result.toString();
+	}
+
+	public void save(org.hibernate.Session session, SourceCode sourceCode) {
+		session.save(sourceCode);
 	}
 	
 

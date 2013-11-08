@@ -45,7 +45,7 @@ public class SCMLogParser {
                 commitData = scm.detail(changeSet.getId());
                 log.info("Persisting change set " + changeSet.getId());
                 log.info("Author: " + commitData.getAuthor() + " on " + commitData.getDate());
-                converter.toDomain(commitData, session, project);
+                converter.toDomain(commitData, project);
                 session.getTransaction().commit();
             } catch (ParseException e) {
                 session.getTransaction().rollback();

@@ -7,6 +7,8 @@ import org.hibernate.Session;
 import org.hibernate.StatelessSession;
 import org.metricminer.MetricMinerExeption;
 import org.metricminer.config.MetricMinerConfigs;
+import org.metricminer.infra.dao.MetricDao;
+import org.metricminer.infra.dao.SourceCodeDao;
 import org.metricminer.model.RegisteredMetric;
 import org.metricminer.model.Task;
 import org.metricminer.tasks.RunnableTask;
@@ -34,6 +36,8 @@ public class CalculateAllMetricsTaskFactory implements RunnableTaskFactory {
 			}
     		metrics.add(metricFactory.build());
 		}
-		return new CalculateAllMetricsTask(task, session, statelessSession, metrics);
+		MetricDao metricDao = new MetricDao(session, null, statelessSession);
+		SourceCodeDao sourceCodeDao = new SourceCodeDao(statelessSession);
+		return new CalculateAllMetricsTask(task, metricDao, metrics, sourceCodeDao, statelessSession);
     }
 }

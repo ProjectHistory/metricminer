@@ -9,6 +9,11 @@ import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.metricminer.infra.dao.ArtifactDao;
+import org.metricminer.infra.dao.AuthorDao;
+import org.metricminer.infra.dao.CommitDao;
+import org.metricminer.infra.dao.ModificationDao;
+import org.metricminer.infra.dao.SourceCodeDao;
 import org.metricminer.scm.CommitData;
 import org.metricminer.scm.DiffData;
 
@@ -16,94 +21,90 @@ import org.metricminer.scm.DiffData;
 public class PersistedCommitConverter {
 
     private HashMap<String, Author> savedAuthors;
+	private AuthorDao authorDao;
+	private CommitDao commitDao;
+	private ArtifactDao artifactDao;
+	private ModificationDao modificationDao;
+	private SourceCodeDao sourceCodeDao;
+	private Session session;
 
-	public PersistedCommitConverter() {
-    	savedAuthors = new HashMap<String, Author>();
+	public PersistedCommitConverter(AuthorDao authorDao, CommitDao commitDao, 
+			ArtifactDao artifactDao, ModificationDao modificationDao, 
+			SourceCodeDao sourceCodeDao, Session session) {
+    	this.authorDao = authorDao;
+		this.commitDao = commitDao;
+		this.artifactDao = artifactDao;
+		this.modificationDao = modificationDao;
+		this.sourceCodeDao = sourceCodeDao;
+		this.session = session;
+		savedAuthors = new HashMap<String, Author>();
     }
 
-    public Commit toDomain(CommitData data, Session session, Project project) throws ParseException {
+    public Commit toDomain(CommitData data, Project project) throws ParseException {
 
-        Author author = convertAuthor(data, session);
-        Commit commit = convertCommit(data, session, author, project);
+		Author author = convertAuthor(data);
+        Commit commit = convertCommit(data, author, project);
 
         for (DiffData diff : data.getDiffs()) {
-            Artifact artifact = convertArtifact(session, project, diff);
-            Modification modification = createModification(session, commit, diff, artifact);
-
+            Artifact artifact = convertArtifact(project, diff);
+            Modification modification = createModification(commit, diff, artifact);
             if (artifact.isSourceCode()) {
                 SourceCode sourceCode = new SourceCode(modification, diff.getFullSourceCode());
-                session.save(sourceCode);
-                convertBlameInformation(session, diff, sourceCode);
-                
-                session.save(sourceCode);
+                sourceCodeDao.save(session, sourceCode);
             }
-
         }
 
         return commit;
     }
 
-	private void convertBlameInformation(Session session, DiffData diff, SourceCode sourceCode) {
-		for(Map.Entry<Integer, String> entry :  diff.getBlameLines().entrySet()) {
-			Author blamedAuthor = searchForPreviouslySavedAuthor(entry.getValue(), session);
-			BlamedLine blamedLine = sourceCode.blame(entry.getKey(), blamedAuthor);
-			
-			session.save(blamedLine);
-		}
-	}
-
-	private Modification createModification(Session session, Commit commit, DiffData diff,
+	private Modification createModification(Commit commit, DiffData diff,
 			Artifact artifact) {
 		Modification modification = new Modification(diff.getDiff(), commit, artifact, diff
 		        .getModificationKind());
 		artifact.addModification(modification);
 		commit.addModification(modification);
-		session.save(modification);
+		modificationDao.save(modification);
 		return modification;
 	}
 
-	private Artifact convertArtifact(Session session, Project project, DiffData diff) {
-		Artifact artifact = searchForPreviouslySavedArtifact(diff.getName(), project, session);
+	private Artifact convertArtifact(Project project, DiffData diff) {
+		Artifact artifact = searchForPreviouslySavedArtifact(diff.getName(), project);
 
 		if (artifact == null) {
 		    artifact = new Artifact(diff.getName(), diff.getArtifactKind(), project);
-		    session.save(artifact);
+		    artifactDao.save(artifact);
 		}
 		return artifact;
 	}
 
-	private Commit convertCommit(CommitData data, Session session, Author author, Project project)
+	private Commit convertCommit(CommitData data, Author author, Project project)
 			throws ParseException {
 		Commit commit = new Commit(data.getCommitId(), author, convertDate(data),
                 new CommitMessage(data.getMessage()), new Diff(data.getDiff()), data.getPriorCommit(), project);
-        session.save(commit);
+		commitDao.save(commit);
 		return commit;
 	}
 
-	private Author convertAuthor(CommitData data, Session session) {
-		Author author = searchForPreviouslySavedAuthor(data.getAuthor(), session);
+	private Author convertAuthor(CommitData data) {
+		Author author = searchForPreviouslySavedAuthor(data.getAuthor());
         if (author == null) {
             author = new Author(data.getAuthor(), data.getEmail());
             savedAuthors.put(data.getAuthor(), author);
-            session.save(author);
+            authorDao.save(author);
         }
 		return author;
 	}
 
-    private Author searchForPreviouslySavedAuthor(String name, Session session) {
+    private Author searchForPreviouslySavedAuthor(String name) {
     	if (savedAuthors.containsKey(name))
     		return savedAuthors.get(name);
-        Author author = (Author) session.createCriteria(Author.class).setCacheable(true).add(
-                Restrictions.eq("name", name)).uniqueResult();
+    	Author author = authorDao.find(name);
         savedAuthors.put(name, author);
         return author;
     }
 
-    private Artifact searchForPreviouslySavedArtifact(String name, Project project, Session session) {
-        Artifact artifact = (Artifact) session.createCriteria(Artifact.class).setCacheable(true).add(
-                Restrictions.eq("name", name)).add(Restrictions.eq("project", project))
-                .uniqueResult();
-        return artifact;
+    private Artifact searchForPreviouslySavedArtifact(String name, Project project) {
+        return artifactDao.find(name, project);
     }
 
     private Calendar convertDate(CommitData data) throws ParseException {

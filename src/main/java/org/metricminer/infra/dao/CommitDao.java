@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.metricminer.infra.dto.KeyValueEntry;
+import org.metricminer.model.Commit;
 
 import br.com.caelum.vraptor.ioc.Component;
 
@@ -28,6 +30,29 @@ public class CommitDao {
 				"c join c.author author group by author order by count(c.id) desc");
 		query.setMaxResults(maxResults);
 		return query.list();
+	}
+
+	public void clear() {
+		this.session.clear();
+	}
+
+	public void beginTransaction() {
+		Transaction transaction = session.getTransaction();
+        if (!transaction.isActive()) {
+            session.beginTransaction();
+        }
+	}
+
+	public void commitTx() {
+		session.getTransaction().commit();
+	}
+
+	public void rollbackTx() {
+		session.getTransaction().rollback();
+	}
+
+	public void save(Commit commit) {
+		session.save(commit);
 	}
 	
 }

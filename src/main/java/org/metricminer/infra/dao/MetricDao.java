@@ -7,9 +7,15 @@ import java.util.List;
 
 
 
+
+
+
 import org.hibernate.Session;
+import org.hibernate.StatelessSession;
+import org.metricminer.model.CalculatedMetric;
 import org.metricminer.tasks.metric.AvaiableMetricResults;
 import org.metricminer.tasks.metric.MetricInfo;
+import org.metricminer.tasks.metric.common.MetricResult;
 
 import br.com.caelum.vraptor.ioc.Component;
 
@@ -18,10 +24,12 @@ public class MetricDao {
 
 	private Session session;
 	private AvaiableMetricResults avaiableMetrics;
+	private StatelessSession statelessSession;
 
-	public MetricDao(Session session, AvaiableMetricResults avaiableMetrics) {
+	public MetricDao(Session session, AvaiableMetricResults avaiableMetrics, StatelessSession statelessSession) {
 		this.session = session;
 		this.avaiableMetrics = avaiableMetrics;
+		this.statelessSession = statelessSession;
 	}
 	
 	public List<ColumnMetadata> getColumns(Class<?> metric) {
@@ -35,5 +43,14 @@ public class MetricDao {
 
 	public List<MetricInfo> listAvaiableResults() {
 		return avaiableMetrics.getMetrics();
+	}
+
+	public void save(MetricResult result) {
+		statelessSession.insert(result);
+	}
+
+	public void save(CalculatedMetric calculatedMetric) {
+		statelessSession.insert(calculatedMetric);
+		
 	}
 }

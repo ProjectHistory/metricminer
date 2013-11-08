@@ -19,8 +19,7 @@ public class ParseSCMLogTaskFactory implements RunnableTaskFactory {
 	@Override
 	public RunnableTask build(Task task, Session session, StatelessSession statelessSession,
 			MetricMinerConfigs config) {
-		SCMLogParser logParser = new SCMLogParserFactory().basedOn(
-				task.getProject().getMapConfig(), session, task.getProject());
+		SCMLogParser logParser = new SCMLogParserFactory().basedOn(task.getProject().getMapConfig(), session, task.getProject());
 		return new ParseSCMLogTask(logParser, task.getProject(), new ProjectDao(session));
 	}
 
