@@ -1,10 +1,6 @@
 package org.metricminer.tasks.metric;
 
-import static java.util.Arrays.asList;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -12,7 +8,6 @@ import javax.annotation.PostConstruct;
 import org.metricminer.config.ClassScan;
 import org.metricminer.tasks.MetricComponent;
 import org.metricminer.tasks.metric.common.MetricResult;
-import org.metricminer.tasks.metric.lcom.LComResult;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
