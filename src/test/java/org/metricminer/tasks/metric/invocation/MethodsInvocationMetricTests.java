@@ -3,6 +3,8 @@ package org.metricminer.tasks.metric.invocation;
 import static br.com.aniche.msr.tests.ParserTestUtils.classDeclaration;
 import static br.com.aniche.msr.tests.ParserTestUtils.toInputStream;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -79,19 +81,6 @@ public class MethodsInvocationMetricTests {
 	}
 	
 	@Test
-	public void shouldCountBigSequenceInvocations() {
-		metric.calculate(source,
-				toInputStream(
-						classDeclaration(
-								"public void method() {"+
-								"a().b().c();"+
-								"}"
-								)));
-	
-		assertEquals(3, metric.getMethods().get("method/0").size());
-	}
-	
-	@Test
 	public void shouldIgnoreMethodInvokedOutsideOfAMethod() {
 		metric.calculate(source,
 				toInputStream(
@@ -104,5 +93,27 @@ public class MethodsInvocationMetricTests {
 								)));
 		
 		assertEquals(1, metric.getMethods().get("method/0").size());
+	}
+	
+	@Test
+	public void shouldNotGetSequencedInvocations() {
+		metric.calculate(source,
+				toInputStream(
+				classDeclaration(
+				"@Test"+
+				"public void shouldInvokeR() throws Exception {"+
+				"	StatisticalTest test = new StatisticalTest(\"wilcoxon\", wilcoxon(), new User());"+
+				"	QueryResult q1 = new QueryResult(path + \"/q1\", null);"+
+				"	QueryResult q2 = new QueryResult(path + \"/q2\", null);"+
+				"	"+
+				"	StatisticalTestResult result = r.execute(test, q1, q2, null, \"test\");"+
+				"	"+
+				"	assertTrue(result.getOutput().contains(\"Wilcoxon signed rank test\"));"+
+				"	assertTrue(result.getOutput().contains(\"p-value = 0.25\"));"+
+				"}"
+				)));
+		
+		assertTrue(metric.getMethods().get("shouldInvokeR/0").contains("getOutput"));
+		assertFalse(metric.getMethods().get("shouldInvokeR/0").contains("contains"));
 	}
 }

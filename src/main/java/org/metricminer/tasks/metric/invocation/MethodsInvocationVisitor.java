@@ -29,7 +29,9 @@ public class MethodsInvocationVisitor extends VoidVisitorAdapter<Object> {
 	}
 	
 	public void visit(MethodCallExpr n, Object arg) {
-		invoked(n.getName());
+		if(n.getScope() == null || (n.getScope()!=null && !n.getScope().toString().contains("."))) { 
+			invoked(n.getName());
+		}
 		super.visit(n, arg);
 		
 	}
