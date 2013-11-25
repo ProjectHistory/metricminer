@@ -11,11 +11,11 @@ import org.mockito.Mockito;
 
 public class FanOutMetricTest {
 
-	private FanOutMetric metric;
+	private FanOutMetricAdapter metric;
 	private SourceCode source;
 
 	public FanOutMetricTest() {
-		this.metric = new FanOutMetric();
+		this.metric = new FanOutMetricAdapter();
 		this.source = Mockito.mock(SourceCode.class);
 	}
 	
