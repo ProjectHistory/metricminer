@@ -49,8 +49,7 @@
 		<dependency org="junit" name="junit" rev="4.8.2" conf="test->default" />
 		<dependency org="org.mockito" name="mockito-all" rev="1.8.5" conf="test->default" />
 		<dependency org="org.hsqldb" name="hsqldb" rev="2.2.8" conf="test->default" />
-
-		
+		<dependency org="org.metricminer" name="codemetrics" rev="0.1-SNAPSHOT" conf="test->default" />
             
 	</dependencies>
 </ivy-module>

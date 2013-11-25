@@ -4,17 +4,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.metricminer.antlr4.java.AntLRVisitor;
+import org.metricminer.codemetrics.cc.CCMetric;
 import org.metricminer.model.SourceCode;
 import org.metricminer.tasks.metric.common.Metric;
 import org.metricminer.tasks.metric.common.MetricResult;
 
 
-public class CCPerMethodMetric implements Metric {
+public class CCPerMethodMetricAdapter implements Metric {
 
-    private CCListener visitor;
 	private SourceCode sourceCode;
+	private CCMetric ccMetric;
 
     public String header() {
         return "path;project;class;method;cc";
@@ -22,27 +24,19 @@ public class CCPerMethodMetric implements Metric {
 
     public void calculate(SourceCode sourceCode, InputStream is) {
         this.sourceCode = sourceCode;
-        
-		try {
-			visitor = new CCListener();
-	        new AntLRVisitor().visit(visitor, is);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ccMetric = new CCMetric();
+		ccMetric.calculate(is);
     }
 
     @Override
     public Collection<MetricResult> results() {
-    	
+    	Set<Entry<String, Integer>> ccPerMethods = ccMetric.ccPerMethod();
     	Collection<MetricResult> list = new ArrayList<MetricResult>();
-        for (Entry<String, Integer> method : visitor.getCcPerMethod().entrySet()) {
-        	int cc = method.getValue();
-        	String methodName = method.getKey();
-        	
-        	list.add(new CCPerMethodResult(sourceCode, methodName, cc));
-        }
-        
+    	for (Entry<String, Integer> method : ccPerMethods) {
+    		int cc = method.getValue();
+    		String methodName = method.getKey();
+    		list.add(new CCPerMethodResult(sourceCode, methodName, cc));
+		}
         return list;
     }
 

@@ -4,15 +4,15 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.metricminer.antlr4.java.AntLRVisitor;
+import org.metricminer.codemetrics.cc.CCMetric;
 import org.metricminer.model.SourceCode;
 import org.metricminer.tasks.metric.common.Metric;
 import org.metricminer.tasks.metric.common.MetricResult;
 
-public class CCMetric implements Metric {
+public class CCMetricAdapter implements Metric {
 
-    private CCListener visitor;
 	private SourceCode sourceCode;
+	private CCMetric ccMetric;
 
     public String header() {
         return "path;project;class;cc;average cc";
@@ -24,27 +24,23 @@ public class CCMetric implements Metric {
 
     public void calculate(SourceCode sourceCode, InputStream is) {
 		this.sourceCode = sourceCode;
-		try {
-			visitor = new CCListener();
-	        new AntLRVisitor().visit(visitor, is);
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
+		ccMetric = new CCMetric();
+		ccMetric.calculate(is);
     }
 
     public double avgCc() {
-        double avgCc = visitor.getAvgCc();
+        double avgCc = ccMetric.avgCc();
         if (Double.isNaN(avgCc))
             avgCc = -1.0;
         return avgCc;
     }
 
     public int cc() {
-        return visitor.getCc();
+        return ccMetric.cc();
     }
 
     public int cc(String method) {
-        return visitor.getCc(method);
+        return ccMetric.cc(method);
     }
 
     @Override

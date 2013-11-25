@@ -9,7 +9,7 @@ public class CCPerMethodMetricFactory implements MetricFactory {
 
     @Override
     public Metric build() {
-        return new CCPerMethodMetric();
+        return new CCPerMethodMetricAdapter();
     }
 
 }

@@ -9,7 +9,7 @@ public class CCMetricFactory implements MetricFactory {
 
     @Override
     public Metric build() {
-        return new CCMetric();
+        return new CCMetricAdapter();
     }
 
 }

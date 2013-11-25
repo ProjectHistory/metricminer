@@ -9,14 +9,14 @@ import org.mockito.Mockito;
 import static br.com.aniche.msr.tests.ParserTestUtils.*;
 import static org.junit.Assert.assertEquals;
 
-public class CCMetricTests {
+public class CCMetricAdapterTests {
 
-	private CCMetric metric;
+	private CCMetricAdapter metric;
 	private SourceCode source;
 
 	@Before
 	public void setUp() {
-		metric = new CCMetric();
+		metric = new CCMetricAdapter();
 		source = Mockito.mock(SourceCode.class);
 	}
 	
