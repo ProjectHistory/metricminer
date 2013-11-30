@@ -9,7 +9,7 @@ public class NewOrChangedTestUnitFactory implements MetricFactory {
 
 	@Override
 	public Metric build() {
-		return new NewOrChangedTestUnit();
+		return new NewOrChangedTestUnitAdapter();
 	}
 
 }

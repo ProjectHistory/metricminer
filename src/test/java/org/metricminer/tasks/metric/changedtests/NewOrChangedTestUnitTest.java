@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 
 public class NewOrChangedTestUnitTest {
 
-	private NewOrChangedTestUnit metric;
+	private NewOrChangedTestUnitAdapter metric;
 	private Artifact artifact;
 	private Commit commit;
 
@@ -30,7 +30,7 @@ public class NewOrChangedTestUnitTest {
 	public void setUp() {
 		commit = mock(Commit.class);
 		artifact = mock(Artifact.class);
-		metric = new NewOrChangedTestUnit();
+		metric = new NewOrChangedTestUnitAdapter();
 	}
 	
 	@Test
