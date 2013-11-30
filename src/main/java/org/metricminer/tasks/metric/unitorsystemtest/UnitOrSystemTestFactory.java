@@ -8,7 +8,7 @@ public class UnitOrSystemTestFactory implements MetricFactory {
 
 	@Override
 	public Metric build() {
-		return new UnitOrSystemTestFinder();
+		return new UnitOrSystemTestFinderAdapter();
 	}
 
 }

@@ -9,13 +9,13 @@ import org.junit.Test;
 import org.metricminer.model.SourceCode;
 import org.mockito.Mockito;
 
-public class UnitOrSystemTestFinderTest {
-	private UnitOrSystemTestFinder metric;
+public class UnitOrSystemTestFinderAdapterTest {
+	private UnitOrSystemTestFinderAdapter metric;
 	private SourceCode source;
 
 	@Before
 	public void setUp() {
-		this.metric = new UnitOrSystemTestFinder();
+		this.metric = new UnitOrSystemTestFinderAdapter();
 		this.source = Mockito.mock(SourceCode.class);
 	}
 	

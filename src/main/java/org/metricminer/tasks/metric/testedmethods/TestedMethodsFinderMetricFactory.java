@@ -9,7 +9,7 @@ public class TestedMethodsFinderMetricFactory implements MetricFactory {
 
     @Override
     public Metric build() {
-        return new TestedMethodFinderMetric();
+        return new TestedMethodFinderMetricAdapter();
     }
 
 }

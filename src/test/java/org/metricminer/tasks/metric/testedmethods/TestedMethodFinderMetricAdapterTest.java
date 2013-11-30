@@ -10,13 +10,13 @@ import org.junit.Test;
 import org.metricminer.model.SourceCode;
 import org.mockito.Mockito;
 
-public class TestedMethodFinderMetricTest {
-	private TestedMethodFinderMetric metric;
+public class TestedMethodFinderMetricAdapterTest {
+	private TestedMethodFinderMetricAdapter metric;
 	private SourceCode source;
 
 	@Before
 	public void setUp() {
-		this.metric = new TestedMethodFinderMetric();
+		this.metric = new TestedMethodFinderMetricAdapter();
 		this.source = Mockito.mock(SourceCode.class);
 	}
 	

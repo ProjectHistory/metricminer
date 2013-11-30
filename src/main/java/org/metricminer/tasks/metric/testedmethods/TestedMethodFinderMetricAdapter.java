@@ -1,8 +1,5 @@
 package org.metricminer.tasks.metric.testedmethods;
 
-import japa.parser.JavaParser;
-import japa.parser.ast.CompilationUnit;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,40 +7,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.metricminer.codemetrics.testedmethods.TestedMethodFinderMetric;
 import org.metricminer.model.SourceCode;
-import org.metricminer.tasks.metric.common.ClassInfoVisitor;
 import org.metricminer.tasks.metric.common.Metric;
 import org.metricminer.tasks.metric.common.MetricResult;
 
 
-public class TestedMethodFinderMetric implements Metric{
+public class TestedMethodFinderMetricAdapter implements Metric{
 
-	private ClassInfoVisitor classInfo;
-	private TestedMethodVisitor visitor;
 	private SourceCode source;
-
-	public String header() {
-		return "path;project;class;test method; production method";
-	}
+	private TestedMethodFinderMetric testedMethodFinderMetric;
 
 	public void calculate(SourceCode source, InputStream is) {
 		this.source = source;
-		try {
-			CompilationUnit cunit = JavaParser.parse(is);
-			
-			classInfo = new ClassInfoVisitor();
-			classInfo.visit(cunit, null);
-
-			visitor = new TestedMethodVisitor(classInfo.getName());
-			visitor.visit(cunit, null);
-		}
-		catch(Exception e) {
-			throw new RuntimeException(e);
-		}		
+		testedMethodFinderMetric = new TestedMethodFinderMetric();
+		testedMethodFinderMetric.calculate(is);
 	}
 
 	public Map<String, Set<String>> getMethods() {
-		return visitor.getInvokedMethods();
+		return testedMethodFinderMetric.getMethods();
 	}
 
     @Override
