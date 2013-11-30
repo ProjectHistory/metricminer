@@ -12,12 +12,12 @@ import org.mockito.Mockito;
 
 public class LcomMetricTests {
 
-	private LComMetric metric;
+	private LComMetricAdapter metric;
 	private SourceCode source;
 
 	@Before
 	public void setUp() {
-		metric = new LComMetric();
+		metric = new LComMetricAdapter();
 		this.source = Mockito.mock(SourceCode.class);
 	}
 	@Test

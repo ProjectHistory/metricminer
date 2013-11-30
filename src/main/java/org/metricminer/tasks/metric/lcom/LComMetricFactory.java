@@ -9,7 +9,7 @@ public class LComMetricFactory implements MetricFactory {
 
     @Override
     public Metric build() {
-        return new LComMetric();
+        return new LComMetricAdapter();
     }
 
 }
