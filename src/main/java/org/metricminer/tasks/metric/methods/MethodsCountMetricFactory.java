@@ -9,7 +9,7 @@ public class MethodsCountMetricFactory implements MetricFactory {
 
     @Override
     public Metric build() {
-        return new MethodsCountMetric();
+        return new MethodsCountMetricAdapter();
     }
 
 }

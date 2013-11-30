@@ -13,12 +13,12 @@ import org.mockito.Mockito;
 
 public class MethodsInvocationMetricTests {
 
-	private MethodsInvocationMetric metric;
+	private MethodsInvocationMetricAdapter metric;
 	private SourceCode source;
 
 	@Before
 	public void setUp() {
-		this.metric = new MethodsInvocationMetric();
+		this.metric = new MethodsInvocationMetricAdapter();
 		this.source = Mockito.mock(SourceCode.class);
 	}
 
@@ -112,8 +112,7 @@ public class MethodsInvocationMetricTests {
 				"	assertTrue(result.getOutput().contains(\"p-value = 0.25\"));"+
 				"}"
 				)));
-		
-		assertTrue(metric.getMethods().get("shouldInvokeR/0").contains("getOutput"));
-		assertFalse(metric.getMethods().get("shouldInvokeR/0").contains("contains"));
+		assertTrue(metric.getMethodsNames().get("shouldInvokeR/0").contains("getOutput/0"));
+		assertFalse(metric.getMethodsNames().get("shouldInvokeR/0").contains("contains"));
 	}
 }

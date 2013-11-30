@@ -11,11 +11,11 @@ import org.mockito.Mockito;
 
 public class LinesOfCodeMetricTest {
 
-	private LinesOfCodeMetric metric;
+	private LinesOfCodeMetricAdapter metric;
 	private SourceCode source;
 	@Before
 	public void setUp() {
-		this.metric = new LinesOfCodeMetric();
+		this.metric = new LinesOfCodeMetricAdapter();
 		this.source = Mockito.mock(SourceCode.class);
 	}
 	

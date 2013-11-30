@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.metricminer.antlr4.java.AntLRVisitor;
 import org.metricminer.codemetrics.cc.CCMetric;
 import org.metricminer.model.SourceCode;
 import org.metricminer.tasks.metric.common.Metric;

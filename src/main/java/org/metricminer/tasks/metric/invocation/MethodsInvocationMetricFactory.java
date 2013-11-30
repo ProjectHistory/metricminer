@@ -9,7 +9,7 @@ public class MethodsInvocationMetricFactory implements MetricFactory {
 
     @Override
     public Metric build() {
-        return new MethodsInvocationMetric();
+        return new MethodsInvocationMetricAdapter();
     }
 
 }

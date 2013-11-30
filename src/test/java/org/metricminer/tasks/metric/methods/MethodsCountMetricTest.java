@@ -11,12 +11,12 @@ import org.mockito.Mockito;
 
 public class MethodsCountMetricTest {
 
-	private MethodsCountMetric metric;
+	private MethodsCountMetricAdapter metric;
 	private SourceCode source;
 	
 	@Before
 	public void setUp() {
-		this.metric = new MethodsCountMetric();
+		this.metric = new MethodsCountMetricAdapter();
 		this.source = Mockito.mock(SourceCode.class);
 	}
 	

@@ -31,7 +31,6 @@ public class MethodsCountResult implements MetricResult {
             int crotectedMethods, int defaultMethods, int constructorMethods,
             int privateAttributes, int publicAttributes, int protectedAttributes,
             int defaultAttributes) {
-        super();
         this.sourceCode = sourceCode;
         this.privateMethods = privateMethods;
         this.publicMethods = publicMethods;

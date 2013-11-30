@@ -9,7 +9,7 @@ public class LinesOfCodeMetricFactory implements MetricFactory {
 
     @Override
     public Metric build() {
-        return new LinesOfCodeMetric();
+        return new LinesOfCodeMetricAdapter();
     }
 
 }
