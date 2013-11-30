@@ -1,8 +1,5 @@
 package org.metricminer.tasks.metric.invocation;
 
-import japa.parser.JavaParser;
-import japa.parser.ast.CompilationUnit;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +12,6 @@ import java.util.Set;
 import org.metricminer.codemetrics.invocation.MethodInvocation;
 import org.metricminer.codemetrics.invocation.MethodsInvocationMetric;
 import org.metricminer.model.SourceCode;
-import org.metricminer.tasks.metric.common.ClassInfoVisitor;
 import org.metricminer.tasks.metric.common.Metric;
 import org.metricminer.tasks.metric.common.MetricResult;
 
