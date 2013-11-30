@@ -9,7 +9,7 @@ public class StaticCounterMetricFactory implements MetricFactory {
 
 	@Override
 	public Metric build() {
-		return new StaticCounterMetric();
+		return new StaticCounterMetricAdapter();
 	}
 
 }

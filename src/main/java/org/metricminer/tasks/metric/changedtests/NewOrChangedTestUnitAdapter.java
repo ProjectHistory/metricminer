@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.metricminer.codemetrics.changedtests.NewOrChangedTestUnit;
 import org.metricminer.model.SourceCode;
@@ -45,6 +46,14 @@ public class NewOrChangedTestUnitAdapter implements Metric {
 	@Override
 	public Class<?> getFactoryClass() {
 		return NewOrChangedTestUnitFactory.class;
+	}
+
+	public Set<String> newTests() {
+		return newOrChangedTestUnit.newTests();
+	}
+
+	public Set<String> modifiedTests() {
+		return newOrChangedTestUnit.modifiedTests();
 	}
 
 }

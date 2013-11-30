@@ -14,13 +14,13 @@ import org.mockito.Mockito;
 
 public class StaticCounterMetricTest {
 
-	private StaticCounterMetric metric;
+	private StaticCounterMetricAdapter metric;
 	private SourceCode source;
 	
 	@Before
 	public void setUp() {
 		this.source = Mockito.mock(SourceCode.class);
-		metric = new StaticCounterMetric();
+		metric = new StaticCounterMetricAdapter();
 	}
 
 	@Test

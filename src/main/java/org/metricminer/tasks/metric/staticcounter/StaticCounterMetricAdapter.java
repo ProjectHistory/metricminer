@@ -1,43 +1,40 @@
 package org.metricminer.tasks.metric.staticcounter;
 
-import japa.parser.JavaParser;
-import japa.parser.ParseException;
-import japa.parser.ast.CompilationUnit;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.metricminer.codemetrics.staticcounter.StaticCounterMetric;
 import org.metricminer.model.SourceCode;
 import org.metricminer.tasks.metric.common.Metric;
 import org.metricminer.tasks.metric.common.MetricResult;
 
-public class StaticCounterMetric implements Metric {
+public class StaticCounterMetricAdapter implements Metric {
 
 	private SourceCode source;
-	
-	private Set<String> attributesName;
-	private int attributesCounter;
-	
-	private Set<String> methodsName;
-	private int methodsCounter;
+	private StaticCounterMetric staticCounterMetric;
 
 	@Override
 	public Collection<MetricResult> results() {
 		Collection<MetricResult> results = new ArrayList<MetricResult>();
 
-		if(this.attributesCounter > 0 || this.methodsCounter > 0) {
-			String attributesName = StringUtils.join(this.attributesName.toArray(), ",");
-			String methodsName = StringUtils.join(this.methodsName.toArray(), ",");
+		int numberOfStaticAttributes = staticCounterMetric.getNumberOfStaticAttributes();
+		int numberOfStaticMethods = staticCounterMetric.getNumberOfStaticMethods();
+		Set<String> staticAttributesName = staticCounterMetric.getStaticAttributesName();
+		Set<String> staticMethodsName = staticCounterMetric.getStaticMethodsName();
+		
+		if (numberOfStaticAttributes > 0 || numberOfStaticMethods > 0) {
+			String attributesName = StringUtils.join(staticAttributesName.toArray(), ",");
+			String methodsName = StringUtils.join(staticMethodsName.toArray(), ",");
 			
 			MetricResult staticAttributesResult = new StaticCounterResult(
 					source,
 					attributesName,
-					attributesCounter,
+					numberOfStaticAttributes,
 					methodsName,
-					methodsCounter);
+					numberOfStaticMethods);
 			
 			results.add(staticAttributesResult);
 		}
@@ -47,22 +44,8 @@ public class StaticCounterMetric implements Metric {
 
 	@Override
 	public void calculate(SourceCode source, InputStream is) {
-		try {
-			this.source = source;
-			
-			CompilationUnit cunit = JavaParser.parse(is);
-
-			StaticCounterMetricVisitor nameVisitor = new StaticCounterMetricVisitor();
-			nameVisitor.visit(cunit, null);
-			
-			attributesName = nameVisitor.attributesName;
-			attributesCounter = nameVisitor.attributesCounter;
-			
-			methodsCounter = nameVisitor.methodsCounter;
-			methodsName = nameVisitor.methodsName;
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
+		staticCounterMetric = new StaticCounterMetric();
+		staticCounterMetric.calculate(is);
 	}
 
 	@Override
@@ -76,19 +59,19 @@ public class StaticCounterMetric implements Metric {
 	}
 
 	public int getNumberOfStaticAttributes() {
-		return attributesCounter;
+		return staticCounterMetric.getNumberOfStaticAttributes();
 	}
 
 	public Set<String> getStaticAttributesName() {
-		return attributesName;
+		return staticCounterMetric.getStaticAttributesName();
 	}
 
 	public int getNumberOfStaticMethods() {
-		return methodsCounter;
+		return staticCounterMetric.getNumberOfStaticMethods();
 	}
 
 	public Set<String> getStaticMethodsName() {
-		return methodsName;
+		return staticCounterMetric.getStaticMethodsName();
 	}
 
 }
