@@ -35,7 +35,10 @@
 
 		<delete dir="${libs.dir}" includes="**/*.*" />
 		<ivy:settings file="${ivy.file}" />
-		<ivy:retrieve pattern="${webapp.dir}/WEB-INF/lib/[artifact](-[classifier]).[ext]" sync="true" />
+		<ivy:retrieve pattern="${webapp.dir}/WEB-INF/lib/[artifact]-[revision](-[classifier]).[ext]" sync="true" />
+	    <mkdir dir="report" />
+	    <ivy:resolve type="${ivy.resolve.types}"/>
+	    <ivy:report todir="report" />
 	</target>
 
 	<target name="compile" depends="prepare">
