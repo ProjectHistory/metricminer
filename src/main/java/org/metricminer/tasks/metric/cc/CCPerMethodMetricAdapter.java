@@ -46,7 +46,7 @@ public class CCPerMethodMetricAdapter implements Metric {
 
 	@Override
 	public Class<?> getFactoryClass() {
-		return null;
+		return CCPerMethodMetricFactory.class;
 	}
 
 
