@@ -58,6 +58,7 @@
         <mapping class="org.metricminer.tasks.metric.testedmethods.TestedMethodFinderResult" />
         <mapping class="org.metricminer.tasks.metric.changedtests.NewOrChangedTestUnitResult" />
         <mapping class="org.metricminer.tasks.metric.staticcounter.StaticCounterResult" />
+        <mapping class="org.metricminer.tasks.metric.halstead.HalsteadMetricsResult" />
         
         <mapping class="org.metricminer.tasks.projectmetric.truckfactor.TruckFactorResult" />
         

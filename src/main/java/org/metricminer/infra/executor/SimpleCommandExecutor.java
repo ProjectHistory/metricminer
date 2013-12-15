@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 
 public class SimpleCommandExecutor implements CommandExecutor {
 
