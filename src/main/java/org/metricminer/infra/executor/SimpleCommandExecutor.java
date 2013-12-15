@@ -29,13 +29,13 @@ public class SimpleCommandExecutor implements CommandExecutor {
 		String stdout = "";
 		String stderr = "";
 		try {
-			LOG.info("Executing: " + command);
+			LOG.debug("Executing: " + command);
 			proc = Runtime.getRuntime().exec(finalCommand, getEnvTokens(),
 					new File(basePath));
 			stdout = readIs(proc.getInputStream());
 			exitValue = proc.waitFor();
 			stderr = readIs(proc.getErrorStream());
-			LOG.info("Finished with exit value " + exitValue);
+			LOG.debug("Finished with exit value " + exitValue);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
