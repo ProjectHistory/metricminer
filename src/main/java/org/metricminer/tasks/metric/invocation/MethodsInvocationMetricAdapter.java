@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.metricminer.codemetrics.invocation.MethodInvocation;
-import org.metricminer.codemetrics.invocation.MethodsInvocationMetric;
+import org.metricminer.codemetrics.invocation.NoInlineMethodInvocationMetric;
 import org.metricminer.model.SourceCode;
 import org.metricminer.tasks.metric.common.Metric;
 import org.metricminer.tasks.metric.common.MetricResult;
@@ -19,11 +19,11 @@ import org.metricminer.tasks.metric.common.MetricResult;
 public class MethodsInvocationMetricAdapter implements Metric {
 
 	private SourceCode source;
-	private MethodsInvocationMetric methodsInvocationMetric;
+	private NoInlineMethodInvocationMetric methodsInvocationMetric;
 	
 	public void calculate(SourceCode source, InputStream is) {
 		this.source = source;
-		this.methodsInvocationMetric = new MethodsInvocationMetric();
+		this.methodsInvocationMetric = new NoInlineMethodInvocationMetric();
 		this.methodsInvocationMetric.calculate(is);
 	}
 	
