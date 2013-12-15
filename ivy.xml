@@ -29,8 +29,7 @@
 		<dependency org="org.mortbay.jetty" name="servlet-api" rev="3.0.pre4"/>
 		<dependency org="javassist" name="javassist" rev="3.12.1.GA"/>
 		<dependency org="commons-io" name="commons-io" rev="2.0.1"/>
-		<dependency org="com.google.guava" name="guava" rev="15.0"/>
-
+		
 		<!-- MetricMiner specific dependencies -->
 		<dependency org="com.google.code.javaparser" name="javaparser" rev="1.0.8" conf="default" />
 		<dependency org="org.apache.commons" name="commons-lang3" rev="3.1" conf="default" />
