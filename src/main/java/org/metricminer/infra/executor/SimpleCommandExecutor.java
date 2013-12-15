@@ -2,14 +2,19 @@ package org.metricminer.infra.executor;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
+
 public class SimpleCommandExecutor implements CommandExecutor {
 
 	private List<EnvironmentVar> vars = null;
+	private static Logger LOG = Logger.getLogger(SimpleCommandExecutor.class);
 	
 	public void setEnvironmentVar(String name, String value) {
 		if (vars == null)
@@ -19,24 +24,42 @@ public class SimpleCommandExecutor implements CommandExecutor {
 	}
 
 	public String execute(String command, String basePath) {
-		StringBuffer total = new StringBuffer();
 		String finalCommand = command;
 		Process proc;
+		int exitValue = 0;
+		String stdout = "";
+		String stderr = "";
 		try {
+			LOG.info("Executing: " + command);
 			proc = Runtime.getRuntime().exec(finalCommand, getEnvTokens(),
 					new File(basePath));
+			stdout = readIs(proc.getInputStream());
+			exitValue = proc.waitFor();
+			stderr = readIs(proc.getErrorStream());
+			LOG.info("Finished with exit value " + exitValue);
 		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 
-		Scanner sc = new Scanner(proc.getInputStream());
+		if (exitValue != 0) {
+			LOG.error("Command " + command + " exited with status " + exitValue);
+			LOG.error("stderr: " + stderr);
+		}
+		return stdout;
 
+	}
+
+	private String readIs(InputStream is) {
+		StringBuffer total = new StringBuffer();
+		Scanner sc = new Scanner(is);
 		while (sc.hasNextLine()) {
 			String nextLine = sc.nextLine();
 			total.append(nextLine + "\r\n");
 		}
+		sc.close();
 		return total.toString();
-
 	}
 
 	private String[] getEnvTokens() {
