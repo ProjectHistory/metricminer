@@ -26,6 +26,7 @@ public class LComMetricAdapter implements Metric {
 	public void calculate(SourceCode source, InputStream is) {
 		this.source = source;
 		lComMetric = new LComMetric();
+		lComMetric.calculate(is);
 	}
 	
 	public double lcomHS() {
