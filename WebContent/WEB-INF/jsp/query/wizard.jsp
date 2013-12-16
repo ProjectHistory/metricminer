@@ -17,7 +17,7 @@
 		margin-top: 15px;
 	}
 	#wizard .block_content {
-		height: 150px;
+		height: 300px;
 	}
 	</style>
 </head>
@@ -48,49 +48,56 @@
 					<ul>
 						<li>
 							<label>
-								<input type="checkbox" class="step2 commit-query" data-columns="cm.message" 
+								<input type="checkbox" class="step2 commit-query entity-selection" data-columns="cm.message" 
 									data-entity="CommitMessage" data-alias="cm" data-joincolumn="message_id"
 									data-commitjoincolumn="id"/>
 									Commit message
 							</label>
 						</li>
 						<li>
-							<input type="checkbox" class="step2 commit-query" data-columns="author.secret_name, author.secret_email" 
-								data-entity="Author" data-alias="author" data-joincolumn="author_id"
-								data-commitjoincolumn="id" />
-							Author	
+							<label>
+								<input type="checkbox" class="step2 commit-query entity-selection" data-columns="author.secret_name, author.secret_email" 
+									data-entity="Author" data-alias="author" data-joincolumn="author_id"
+									data-commitjoincolumn="id" />
+								Author	
+							</label>
 						</li>
 						<li>
-							<input type="checkbox" class="step2 commit-query" data-columns="modification.kind as modification_kind, artifact.name, artifact.kind as artifact_kind" 
-								data-entity="Modification" data-alias="modification" data-joincolumn="id"
-								data-commitjoincolumn="commit_id" data-extrajoin="JOIN Artifact artifact ON modification.artifact_id=artifact.id"/>
+							<label>
+								<input type="checkbox" class="step2 commit-query entity-selection" data-columns="modification.kind as modification_kind, artifact.name, artifact.kind as artifact_kind" 
+									data-entity="Modification" data-alias="modification" data-joincolumn="id"
+									data-commitjoincolumn="commit_id" data-extrajoin="JOIN Artifact artifact ON modification.artifact_id=artifact.id"/>
 								Modified artifacts
+							</label>
 						</li>
 					</ul>
+					<form>
+						<input type="submit" class="submit long next-step" value="Next step" />
+					</form>
 				</div>
 				<div class="hidden" class="wizard-step" id="step2-metric" data-nextstep="step3-metric">
 					What metric you want to extract?
 					<ul>
 						<li>
-							<a href="#" class="step2 metric-query" data-entity="CCResult" data-alias="cc"
+							<a href="#" class="step2 metric-query entity-selection" data-entity="CCResult" data-alias="cc"
 								data-columns="cc.avgCc, cc.cc">
 								Cyclomatic complexity
 							</a>
 						</li>
 						<li>
-							<a href="#" class="step2 metric-query" data-entity="FanOutResult" data-alias="fanout"
+							<a href="#" class="step2 metric-query entity-selection" data-entity="FanOutResult" data-alias="fanout"
 								data-columns="fanout.fanOut">
 								Fan out
 							</a>
 						</li>
 						<li>
-							<a href="#" class="step2 metric-query" data-entity="LinesOfCodeResult" data-alias="loc"
+							<a href="#" class="step2 metric-query entity-selection" data-entity="LinesOfCodeResult" data-alias="loc"
 								data-columns="loc.linesOfCode, loc.methodName">
 								Lines of code
 							</a>
 						</li>
 						<li>
-							<a href="#" class="step2 metric-query" data-entity="MethodsInvocationResult" data-alias="methodsInvocation"
+							<a href="#" class="step2 metric-query entity-selection" data-entity="MethodsInvocationResult" data-alias="methodsInvocation"
 								data-columns="methodsInvocation.methodName, methodsInvocation.methodsInvocation">
 								Methods invocation
 							</a>
@@ -102,7 +109,7 @@
 					<ul>
 						<li>
 							<label>
-								<input type="checkbox" class="step3 metric-query" data-entity="Commit"
+								<input type="checkbox" class="step3 metric-query entity-selection" data-entity="Commit"
 									data-columns="commit.commitId, commit.date" data-metricjoincolumn="modification.commit_id"
 									data-joincolumn="commit.id" data-alias="commit"/>
 									Commit associated
@@ -110,18 +117,46 @@
 						</li>
 						<li>
 							<label>
-								<input type="checkbox" class="step3 metric-query" data-entity="Project"
+								<input type="checkbox" class="step3 metric-query entity-selection" data-entity="Project"
 									data-columns="project.name" data-metricjoincolumn="artifact.project_id"
 									data-joincolumn="project.id" data-alias="project"/>
 									Project associated
 							</label>
 						</li>
 					</ul>
+					<form>
+						<input type="submit" class="submit long next-step" value="Next step" />
+					</form>
+				</div>
+				<div class="hidden where-clauses">
+					Do you want to filter the results with any of these entities?
+					<ul>
+					</ul>
+					<form>
+						<input type="submit" id="finish" class="submit long" value="i'm done, finish!" />
+					</form>
+				</div>
+				
+				<div class="hidden fields-selection">
+					<p>What fields?</p>
+					<ul>
+					</ul>
+					<form>
+						<input type="submit" id="fields-selection-submit" class="submit long next-step" value="select other entity" />
+					</form>
+				</div>
+				<div class="hidden condition">
+					<p class="desc">Define the restriction:</p>
+					<form id="condition-form">
+						<input type="text" id="restriction" />
+						<p>For example: id &lt; 100</p>
+						<input type="submit" class="submit long" value="done" />
+					</form>
 				</div>
 				
 			</metricminer:box>
 			
-			<metricminer:box title="Execute SQL Query">
+			<metricminer:box boxId="generated-query" title="Generated SQL Query">
 				<c:if test="${!empty errors}">
 					<div class="message errormsg">
 						<p>
@@ -135,7 +170,7 @@
 				<form method="post" action="${linkTo[QueryController].save}">
 					<p>
 						<label for="query-name">Query name: </label> <br />
-						<input id="query-name" type="text" value="${query.name}" class="text small" name="query.name" />
+						<input id="query-name" type="text" value="Give a name to your query!" class="text small" name="query.name" />
 					</p>
 					<p>
 						<label for="sqlQuery">SQL Query: </label> <br />
@@ -162,6 +197,9 @@
 	<c:import url="../import/javascripts.jsp" />
 	<script src="<c:url value='/js/codemirror/lib/codemirror.js' />"></script>
 	<script src="<c:url value='/js/codemirror/mode/sql/sql.js' />"></script>
+	<script>
+		var metadata = ${entitiesMetadata};
+	</script>
 	<script src="<c:url value='/js/wizard.js' />"></script>
 </body>
 </html>

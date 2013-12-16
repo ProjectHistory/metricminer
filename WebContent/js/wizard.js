@@ -1,3 +1,9 @@
+
+
+
+
+var entities = [];
+var queryStatus = {'containsWhere':false};
 var editor = CodeMirror.fromTextArea(document.getElementById("sqlQuery"), {
 	mode: "text/x-mariadb",
 	lineNumbers: true
@@ -85,4 +91,85 @@ $(function() {
 		query = fields + joins;
 		editor.setValue(query);
 	});
+	
+	$(".next-step").parent().submit(function(e) {
+		e.preventDefault();
+		var step = $(this).parent();
+		var where = $('.where-clauses ul');
+		where.html("");
+		console.log(entities);
+		entities.forEach(function(e) {
+			metadata[e.entity];
+			where.append("<li><a class='where-entity' data-alias="+e.alias+" data-entity='"+e.entity+"' href='#'>"+e.entity+"</a></li>");
+		});
+		step.hide();
+		$(".where-clauses").fadeIn(600);
+		$(".where-entity").click(function(e) {
+			e.preventDefault();
+			var link = $(this);
+			var entity = link.data("entity");
+			var alias = link.data("alias");
+			console.log(entity);
+			$(".fields-selection p").text("From which fields from " + entity + " do you want to filter?");
+			var fieldList = $(".fields-selection ul");
+			fieldList.html("");
+			var fields = metadata[entity];
+			fields.forEach(function(f){
+				fieldList.append("<li><a href='#' class='field-to-select' data-type='"+f.type+"' data-name='"+f.columnName+"'>"+f.columnName +" ("+f.type+")</a></li>");
+			}); 
+			$(".field-to-select").click(function(e) {
+				e.preventDefault();
+				var link = $(this);
+				$("#condition-form").unbind();
+				$("#condition-form").submit(function(e) {
+					var query = editor.getValue();
+					var restriction = $("#restriction").val();
+					if (!queryStatus.containsWhere) {
+						query = query + "\nWHERE \n";
+						queryStatus.containsWhere = true;
+					} else {
+						query = query + "\nAND ";
+					}
+					query = query + alias + "." + restriction; 
+					editor.setValue(query);
+					$(".condition").hide();
+					$(".fields-selection").fadeIn(600);
+					e.preventDefault();
+				});
+				$("#restriction").val(link.data("name"));
+				$(".condition p.desc").text("Define the restriction for the column "+link.data("name")+" of type " + link.data("type") + ":");
+				$(".fields-selection").hide();
+				$(".condition").fadeIn(600);
+			});
+			$(".where-clauses").hide();
+			$(".fields-selection").fadeIn(600);
+			
+		});
+	});
+	$("#fields-selection-submit").click(function(e) {
+		e.preventDefault();
+		$(".fields-selection").hide();
+		$(".where-clauses").fadeIn(600);
+	});
+	
+	$(".entity-selection").click(function() {
+		putEntity(this);
+	});
+	
+	$(".entity-selection").change(function() {
+		putEntity(this);
+	});
+	
+	$("#finish").click(function(e) {
+		e.preventDefault();
+        $('html, body').animate({
+            scrollTop: $("#generated-query").offset().top
+        }, 2000);
+	});
+	
+	function putEntity(self) {
+		var selected = $(self);
+		var entity = {'alias': selected.data("alias"), 'entity': selected.data("entity")};
+		entities.push(entity);
+	}
 });

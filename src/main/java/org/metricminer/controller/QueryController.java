@@ -1,8 +1,12 @@
 package org.metricminer.controller;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.metricminer.infra.dao.ColumnMetadata;
+import org.metricminer.infra.dao.MetricDao;
 import org.metricminer.infra.dao.QueryDao;
 import org.metricminer.infra.dao.QueryExampleDao;
 import org.metricminer.infra.dao.QueryResultDAO;
@@ -10,10 +14,19 @@ import org.metricminer.infra.dao.TaskDao;
 import org.metricminer.infra.interceptor.LoggedUserAccess;
 import org.metricminer.infra.session.UserSession;
 import org.metricminer.infra.validator.QueryValidator;
+import org.metricminer.model.Artifact;
+import org.metricminer.model.Author;
+import org.metricminer.model.Commit;
+import org.metricminer.model.CommitMessage;
+import org.metricminer.model.Modification;
 import org.metricminer.model.Query;
 import org.metricminer.model.QueryExample;
 import org.metricminer.model.QueryResult;
 import org.metricminer.model.Task;
+import org.metricminer.tasks.metric.cc.CCResult;
+import org.metricminer.tasks.metric.fanout.FanOutResult;
+import org.metricminer.tasks.metric.invocation.MethodsInvocationResult;
+import org.metricminer.tasks.metric.lines.LinesOfCodeResult;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
@@ -22,6 +35,8 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.FileDownload;
+
+import com.google.gson.Gson;
 
 @Resource
 public class QueryController {
@@ -34,11 +49,13 @@ public class QueryController {
     private final UserSession userSession;
 	private Validator validator;
 	private QueryExampleDao queryExampleDao;
+	private MetricDao metrics;
 
     public QueryController(TaskDao taskDao, QueryDao queryDao,
             QueryResultDAO queryResultDAO, Result result,
             QueryValidator queryValidator, UserSession userSession, 
-            Validator validator, QueryExampleDao queryExampleDao) {
+            Validator validator, QueryExampleDao queryExampleDao,
+            MetricDao metrics) {
         this.taskDao = taskDao;
         this.queryDao = queryDao;
         this.queryResultDAO = queryResultDAO;
@@ -47,6 +64,7 @@ public class QueryController {
         this.userSession = userSession;
 		this.validator = validator;
 		this.queryExampleDao = queryExampleDao;
+		this.metrics = metrics;
     }
 
     @LoggedUserAccess
@@ -118,6 +136,18 @@ public class QueryController {
     @LoggedUserAccess
     @Get("/query/wizard")
     public void wizard() {
+    	Map<String, List<ColumnMetadata>> map = new HashMap<String, List<ColumnMetadata>>();
+		map.put("Artifact", metrics.getColumns(Artifact.class));
+		map.put("Commit", metrics.getColumns(Commit.class));
+		map.put("Author", metrics.getColumns(Author.class));
+		map.put("CommitMessage", metrics.getColumns(CommitMessage.class));
+		map.put("CCResult", metrics.getColumns(CCResult.class));
+		map.put("FanOutResult", metrics.getColumns(FanOutResult.class));
+		map.put("LinesOfCodeResult", metrics.getColumns(LinesOfCodeResult.class));
+		map.put("MethodsInvocationResult", metrics.getColumns(MethodsInvocationResult.class));
+		map.put("Modification", metrics.getColumns(Modification.class));
+		
+		result.include("entitiesMetadata", new Gson().toJson(map));
     }
     
     
