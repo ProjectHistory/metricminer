@@ -35,6 +35,7 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.FileDownload;
+import br.com.caelum.vraptor.view.Results;
 
 import com.google.gson.Gson;
 
@@ -107,6 +108,7 @@ public class QueryController {
         List<Task> tasksToRunThisQuery = taskDao.findTasksScheduledToRunQuery(query);
         
         result.include("query", query);
+        result.include("allowedToEdit", query.isAllowedToEdit(userSession.getUser()));
         result.include("scheduledToRun", !tasksToRunThisQuery.isEmpty());
     }
 
@@ -148,6 +150,29 @@ public class QueryController {
 		map.put("Modification", metrics.getColumns(Modification.class));
 		
 		result.include("entitiesMetadata", new Gson().toJson(map));
+    }
+    
+    @Get("/query/edit/{queryId}")
+    public void editQueryForm(Long queryId) {
+        Query query = queryDao.findBy(queryId);
+        if (!query.isAllowedToEdit(userSession.getUser())) {
+            result.use(Results.http()).setStatusCode(403);
+        }
+        result.include("query", query);
+    }
+    
+    @LoggedUserAccess
+    @Post("/query/{queryId}")
+    public void updateQuery(Query updatedQuery, Long queryId) {
+        Query persistedUpdatedQuery = queryDao.findBy(queryId);
+        persistedUpdatedQuery.setSqlQuery(updatedQuery.getSqlQuery());
+        queryValidator.validate(persistedUpdatedQuery);
+        queryValidator.validateEditByAuthor(persistedUpdatedQuery, userSession.getUser());
+        
+        queryDao.update(persistedUpdatedQuery);
+        
+        taskDao.saveTaskToExecuteQuery(persistedUpdatedQuery);
+        result.redirectTo(QueryController.class).detailQuery(queryId);
     }
     
     

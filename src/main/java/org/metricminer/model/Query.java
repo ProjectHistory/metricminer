@@ -101,4 +101,9 @@ public class Query {
         this.author = author;
     }
 
+    
+    public boolean isAllowedToEdit(User otherUser) {
+    	return author.equals(otherUser);
+    }
+
 }
