@@ -60,4 +60,13 @@ public class QueryDao {
     	.list();
 	}
 
+	public void refreshSession(Session session) {
+		this.session = session;
+		
+	}
+
+	public void detach(Query query) {
+		session.evict(query);
+	}
+
 }

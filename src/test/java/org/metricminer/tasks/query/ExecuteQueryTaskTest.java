@@ -8,6 +8,9 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.OutputStream;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.classic.Session;
 import org.junit.Test;
 import org.metricminer.config.MetricMinerConfigs;
 import org.metricminer.infra.dao.QueryDao;
@@ -41,9 +44,15 @@ public class ExecuteQueryTaskTest {
         Mailer mailer = mock(Mailer.class);
         
         QueryExecutor queryExecutor = mock(QueryExecutor.class);
-        Mockito.doThrow(new RuntimeException("error message")).when(queryExecutor).execute(Mockito.any(Query.class), Mockito.any(OutputStream.class));
+        Mockito.doThrow(new RuntimeException("error message")).when(queryExecutor).execute(Mockito.any(Query.class), Mockito.any(OutputStream.class), Mockito.any(OutputStream.class));
         
-        ExecuteQueryTask queryTask = new ExecuteQueryTask(task, queryExecutor, queryDao, config, mailer);
+        SessionFactory sf = mock(SessionFactory.class);
+        Session session = mock(Session.class);
+        Transaction tx = mock(Transaction.class);
+		when(session.getTransaction()).thenReturn(tx);
+		when(sf.openSession()).thenReturn(session);
+        
+        ExecuteQueryTask queryTask = new ExecuteQueryTask(task, queryExecutor, queryDao, config, mailer, sf);
         queryTask.run();
         
         assertEquals(1, queryToRun.getResultCount());

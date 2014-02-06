@@ -1,6 +1,7 @@
 package org.metricminer.tasks.query;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 import org.metricminer.config.MetricMinerConfigs;
 import org.metricminer.infra.csv.SimpleCSVWriter;
@@ -17,9 +18,11 @@ import br.com.caelum.vraptor.simplemail.Mailer;
 public class ExecuteQueryTaskFactory implements RunnableTaskFactory {
 
     private Mailer mailer;
+	private SessionFactory sf;
     
-    public ExecuteQueryTaskFactory(Mailer mailer) {
+    public ExecuteQueryTaskFactory(Mailer mailer, SessionFactory sf) {
         this.mailer = mailer;
+		this.sf = sf;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class ExecuteQueryTaskFactory implements RunnableTaskFactory {
 			MetricMinerConfigs config) {
         return new ExecuteQueryTask(task, 
         		new QueryExecutor(statelessSession, new SimpleCSVWriter(), new QueryProcessor()), 
-        		new QueryDao(session), config, mailer);
+        		new QueryDao(session), config, mailer, sf);
     }
 
 }

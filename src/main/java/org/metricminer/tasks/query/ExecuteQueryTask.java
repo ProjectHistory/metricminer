@@ -12,6 +12,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 import org.apache.log4j.Logger;
+import org.hibernate.SessionFactory;
+import org.hibernate.classic.Session;
 import org.metricminer.config.MetricMinerConfigs;
 import org.metricminer.infra.dao.QueryDao;
 import org.metricminer.model.Query;
@@ -30,11 +32,14 @@ public class ExecuteQueryTask implements RunnableTask {
     private final MetricMinerConfigs config;
     private Mailer mailer;
     private static Logger logger = Logger.getLogger(ExecuteQueryTask.class);
+	private SessionFactory sf;
 
     public ExecuteQueryTask(Task task, QueryExecutor queryExecutor,
-            QueryDao queryDao, MetricMinerConfigs config, Mailer mailer) {
+            QueryDao queryDao, MetricMinerConfigs config, Mailer mailer,
+            SessionFactory sf) {
         this.queryDao = queryDao;
         this.config = config;
+		this.sf = sf;
         this.queryId = Long
                 .parseLong(task
                         .getTaskConfigurationValueFor(TaskConfigurationEntryKey.QUERY_ID));
@@ -51,6 +56,7 @@ public class ExecuteQueryTask implements RunnableTask {
 	                + query.getId() + "-" + query.getResultCount();
 	        ZipOutputStream zipOutputStream  = zipOutStreamFor(filename);
 	        OutputStream csvOutputStream = csvOutStreamFor(filename);
+	        queryDao.detach(query);
 	        queryExecutor.execute(query, zipOutputStream, csvOutputStream);
 	        zipOutputStream.closeEntry();
 	        zipOutputStream.close();
@@ -65,8 +71,12 @@ public class ExecuteQueryTask implements RunnableTask {
             query.addResult(result);
         }
         sendMail(query);
+        Session session = sf.openSession();
+        session.beginTransaction();
+		queryDao.refreshSession(session);
         queryDao.save(result);
         queryDao.update(query);
+        session.getTransaction().commit();
     }
 
     private OutputStream csvOutStreamFor(String filename) throws FileNotFoundException {
