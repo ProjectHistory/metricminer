@@ -61,6 +61,7 @@
         <mapping class="org.metricminer.tasks.metric.halstead.HalsteadMetricsResult" />
         <mapping class="org.metricminer.tasks.metric.entropy.EntropyResult" />
         <mapping class="org.metricminer.tasks.metric.entropy.EntropyPerMethodResult" />
+        <mapping class="org.metricminer.tasks.metric.busereadability.BuseReadabilityResult" />
         
         <mapping class="org.metricminer.tasks.projectmetric.truckfactor.TruckFactorResult" />
         
