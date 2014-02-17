@@ -14,9 +14,11 @@ import org.metricminer.tasks.metric.common.MetricResult;
 public class BuseReadabilityMetricAdapter implements Metric {
 	
 	private BuseReadabilityMetric metric;
+	private SourceCode source;
 
 	@Override
 	public void calculate(SourceCode source, InputStream is) {
+		this.source = source;
 		metric = new BuseReadabilityMetric();
 		metric.calculate(is);
 	}
@@ -26,7 +28,7 @@ public class BuseReadabilityMetricAdapter implements Metric {
 		Set<Entry<String, Double>> entries = metric.getResults().entrySet();
 		ArrayList<MetricResult> results = new ArrayList<MetricResult>();
 		for (Entry<String, Double> entry : entries) {
-			results.add(new BuseReadabilityResult(entry.getKey(), entry.getValue()));
+			results.add(new BuseReadabilityResult(entry.getKey(), entry.getValue(), source));
 		}
 		return results;
 	}
